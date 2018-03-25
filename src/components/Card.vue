@@ -1,5 +1,5 @@
 <template>
-  <div class="card" :class='cardClass' @click="toggleShow" v-bind:id='cardId'>
+  <div class="card" :class='cardClass' @click="triggerEvent" v-bind:id='cardId'>
       <div class="number">
           {{card.value}}
       </div>
@@ -16,35 +16,35 @@ export default {
     },
     data(){
         return {
-            cardState: 'hidden',
-            value: this.card.value,
-            id: this.card.id,
-            //isEliminated: this.card.isEliminated
-            //cardId: 'card-' + this.card.id
+            value() {
+                return this.card.value
+                },
+            id() {
+                return this.card.id
+            },
+            isVisible() {
+                return this.card.isVisible
+            },
+            isEliminated() {
+                return this.card.isEliminated
+            },
         }
     },
     methods:{
-        toggleShow(){
-            // console.log('this value: ' + this.value);
-            // console.log('this id: ' + this.id);
-            console.log('inside the Card toggleShow');
-            console.log(this.card);
-            if(this.card.isGone()){
-                this.cardState = 'hidden'//'gone'
-            }else if (this.cardState === 'hidden'){
-                this.cardState = 'shown'
-            }else{
-                this.cardState = 'hidden'
-            }
-            this.$emit('selected', this.card)
+        cardState(){
+            return this.isVisible() ? 'shown' : 'hidden'
+        },
+        triggerEvent(){
+            this.$emit('select', this.card)
         },
     },
     computed: {
         cardClass (){
-            return this.cardState
+            if (this.isEliminated()){ return 'eliminated'}
+            return this.cardState()
         },
         cardId (){
-            return 'card-'+this.id
+            return 'card-'+this.id()
         }
     }
 }

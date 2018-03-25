@@ -4,11 +4,8 @@ var Card = function (value, row, col) {
     this.col = col;
     this.id = idGetter();
     this.isEliminated = false;
+    this.isVisible = false;
 };
-
-Card.prototype.isGone = function () {
-    return this.isEliminated
-}
 
 var idGetter;
 (function () {
@@ -26,7 +23,6 @@ var Board = function (size = 4) {
     for (let row = 0; row < this.size; row++) {
         this.cards[row] = Array(this.size).fill({});
         for (let col = 0; col < this.size; col++) {
-            //console.log(this.addCard(row, col))
             this.cards[row][col] = this.addCard(row,col);
         }
     }
@@ -40,7 +36,9 @@ Board.prototype.addCard = function(row, col){
 }
 
 Board.prototype.select = function(card){
+    card.isVisible = !card.isVisible;
     console.log('inside select')
+    console.log('visibility: ' + card.isVisible)
     if(!this.currentCard){
         this.currentCard = card;
     }
@@ -48,14 +46,25 @@ Board.prototype.select = function(card){
         this.previousCard = card;
     }
     if (this.currentCard && this.previousCard){
-        if (card.value === this.currentCard.value){
-            card.value +=2;
-            this.currentCard.value += 2;
+        let equalValue = this.previousCard.value === this.currentCard.value
+        if (!equalValue && card !== (this.previousCard || this.currentCard)){
+            //Hide them
+            this.currentCard.isVisible = false;
+            this.previousCard.isVisible = false;            
+            //Reset temporary card slots
             this.currentCard = false;
             this.previousCard = false;
-        }else{
-            card.isEliminated = true;
+            //assign the 3rd card to currentCard
+            this.currentCard = card;
+        } else if (card !== (this.previousCard || this.currentCard)){
+            //eliminate both cards if values are equal
+            this.currentCard.isEliminated = true;
             this.previousCard.isEliminated = true;
+            //reset temp slots
+            this.currentCard = false;
+            this.previousCard = false;
+            //assign 3rd card to current card
+            this.currentCard = card;
         }
     }
 }
