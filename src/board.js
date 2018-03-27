@@ -37,8 +37,6 @@ Board.prototype.addCard = function(row, col){
 
 Board.prototype.select = function(card){
     card.isVisible = !card.isVisible;
-    console.log('inside select')
-    console.log('visibility: ' + card.isVisible)
     if(!this.currentCard){
         this.currentCard = card;
     }
